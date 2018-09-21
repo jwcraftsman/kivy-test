@@ -128,3 +128,9 @@ The Python programs in this project were written to learn about Kivy
 and test various functionality.  This project is an archive for my own
 reference, but others may find it useful as well.
 
+Useful Links
+------------
+
+- `Kivy Documentation <https://kivy.org/doc/stable/gettingstarted/intro.html>`_
+- `Kivy Linux Installation Documentation <https://kivy.org/doc/stable/installation/installation-linux.html>`_
+- `Kivy Development Version Installation Documentation <https://kivy.org/doc/stable/installation/installation.html#development-version>`_
