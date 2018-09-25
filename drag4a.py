@@ -2,7 +2,9 @@
 
 """
 Use touch events to drag a rectangle around the screen with borders,
-keeping the rectangle inside its parent widget.
+keeping the rectangle inside its parent widget and keeping the rectangle
+from sliding away from the touch position when going in and out of the
+parent widget's screen area.
 """
 
 from kivy.properties import ListProperty
@@ -64,18 +66,26 @@ class Rect:
 
 # Similar to DragBehavior
 class DragRect(Rect, FloatLayout):
+    def __init__(self, *args, **kw):
+        super().__init__(*args, **kw)
+        self._x_offset = 0
+        self._y_offset = 0
+        
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
             touch.grab(self)
+            self._x_offset = self.x - touch.x
+            self._y_offset = self.y - touch.y
             return True # Don't allow simultaneous grabs
         
     def on_touch_move(self, touch):
         if not touch.grab_current is self:
             return
-        
-        self.x += touch.dx
-        self.y += touch.dy
 
+        self.x = touch.x + self._x_offset
+        self.y = touch.y + self._y_offset
+
+        # Stay inside parent widget
         if self.x < 0:
             self.x = 0
         elif self.right > self.parent.width:

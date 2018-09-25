@@ -68,6 +68,7 @@ class DragRect(DragBehavior, Rect, FloatLayout):
         # Parent does not exist when created
         if self.parent is None:
             return
+        
         if self.x < 0:
             self.x = 0
         elif self.right > self.parent.width:
