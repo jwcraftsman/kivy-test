@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+"""
+Use DragBehavior mixin class to drag a rectangle around the screen.
+"""
+
 from kivy.uix.behaviors import DragBehavior
 from kivy.uix.floatlayout import FloatLayout
 from kivy.app import App
