@@ -76,6 +76,7 @@ class DragRect(Rect, FloatLayout):
         self.x += touch.dx
         self.y += touch.dy
 
+        # Stay inside parent widget
         if self.x < 0:
             self.x = 0
         elif self.right > self.parent.width:

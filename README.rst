@@ -121,6 +121,25 @@ Hopefully the example will now work properly with the touchscreen. ::
     # In the kivy/examples/demo/touchtracer directory
     python3 main.py
 
+Install Kivy Documentation
+--------------------------
+
+If you want to build a local copy of the Kivy HTML documentation follow
+these steps from *kivy/doc/README.md*::
+
+  workon kivy
+  cd kivy/doc
+  pip3 install sphinx
+  pip3 install -r doc-requirements.txt
+  make html
+  firefox build/html/index.html
+
+The *pdf* documentation can be built like this::
+
+  sudo apt-get install texlive-full
+  make pdf
+  evince build/latex/Kivy.pdf
+  
 Programs
 --------
 
