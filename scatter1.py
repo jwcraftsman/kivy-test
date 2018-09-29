@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 """
-Use touch to pan and "pinch" to zoom on the ScatterLayout.  The ScatterLayout
-is listed first and a placeholder is used for sizing/positioning to keep
-the ScatterLayout above the other widgets.
+Use touch drags to pan and "pinch" to zoom on the ScatterLayout.
+The ScatterLayout is listed first and a placeholder is used for
+sizing/positioning to keep the ScatterLayout below the other widgets.
 """
 
 from kivy.properties import ListProperty, ObjectProperty
@@ -100,18 +100,22 @@ class Box(Rect, Widget):
 
 class MyScatterLayout(ScatterLayout):
     placeholder = ObjectProperty(None)
-    def on_touch_move(self, touch):
-        super().on_touch_move(touch)
-        if touch.grab_current is self:
-            if self.x > self.placeholder.x:
-                self.x = self.placeholder.x
-            if self.y > self.placeholder.y:
-                self.y = self.placeholder.y
-            if self.right < self.placeholder.right:
-                self.right = self.placeholder.right
-            if self.top < self.placeholder.top:
-                self.top = self.placeholder.top
-            return
+    def on_size(self, width, height):
+        self.keep_in_bounds()
+
+    def on_transform_with_touch(self, touch):
+        self.keep_in_bounds()
+        
+    def keep_in_bounds(self):
+        if self.x > self.placeholder.x:
+            self.x = self.placeholder.x
+        if self.y > self.placeholder.y:
+            self.y = self.placeholder.y
+        if self.right < self.placeholder.right:
+            self.right = self.placeholder.right
+        if self.top < self.placeholder.top:
+            self.top = self.placeholder.top
+        return
         
 class TestApp(App):
     def build(self):
