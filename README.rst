@@ -139,6 +139,54 @@ The *pdf* documentation can be built like this::
   sudo apt-get install texlive-full
   make pdf
   evince build/latex/Kivy.pdf
+
+Install Adaptagrams Libraries
+-----------------------------
+
+Some of the test programs in this repository make use of *libavoid*,
+which is part of the *adaptagrams* project.  The first step is to
+check out a copy of the *adaptagrams* git repository::
+
+  git clone https://github.com/mjwybrow/adaptagrams.git
+  
+There appear to be no tags or releases yet, so this is the commit I
+used for reference (Wed Mar 7, 2018)::
+
+  git checkout 86b46ed3694b13603a6625d2d6fff0352441f846
+
+These packages should be installed if they are not present::
+
+  sudo apt-get install libcairo2-dev automake m4 swig
+  
+These commands should build the C libraries::
+
+  cd adaptagrams/cola
+  ./autogen.sh
+
+This resulted in some test suite failures, but the *libavoid.so* library
+was built correctly.  The location of the library is here::
+
+  adaptagrams/cola/libavoid/.libs/libavoid.so
+
+Now we need to install the python wrappers.  First, change this line
+in *swig-python-setup.py* to make it work under Python 3::
+
+  if sysconfig.get_config_vars().has_key("OPT"):
+  
+to::
+  
+  if "OPT" in sysconfig.get_config_vars():
+
+Then build the python wrappers::
+  
+  workon kivy
+  make -f Makefile-swig-python
+
+Now install the python package::
+  
+  ln -s swig-python-setup.py setup.py
+  cd ..
+  pip install -e cola
   
 Programs
 --------
@@ -153,3 +201,4 @@ Useful Links
 - `Kivy Documentation <https://kivy.org/doc/stable/gettingstarted/intro.html>`_
 - `Kivy Linux Installation Documentation <https://kivy.org/doc/stable/installation/installation-linux.html>`_
 - `Kivy Development Version Installation Documentation <https://kivy.org/doc/stable/installation/installation.html#development-version>`_
+- `Adaptagrams Project Home Page <http://www.adaptagrams.org/>`_
