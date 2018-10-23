@@ -202,3 +202,4 @@ Useful Links
 - `Kivy Linux Installation Documentation <https://kivy.org/doc/stable/installation/installation-linux.html>`_
 - `Kivy Development Version Installation Documentation <https://kivy.org/doc/stable/installation/installation.html#development-version>`_
 - `Adaptagrams Project Home Page <http://www.adaptagrams.org/>`_
+- `Adaptagrams libavoid Example <http://www.adaptagrams.org/documentation/libavoid_example.html>`_
