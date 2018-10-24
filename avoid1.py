@@ -47,15 +47,15 @@ kv = """
             points: self._kvpoints
 
 FloatLayout:
-    DragRect:
+    Block:
         pos: 100, 100
-    DragRect:
+    Block:
         pos: 200, 100
-    DragRect:
+    Block:
         pos: 300, 100
-    DragRect:
+    Block:
         pos: 400, 100
-    DragRect:
+    Block:
         pos: 500, 100
     Connection:
         source: 25, 125
@@ -64,10 +64,6 @@ FloatLayout:
 
 # Similar to DragBehavior
 class DragRect(FloatLayout):
-    def __init__(self, *args, **kw):
-        self.avoid_shape = None
-        super().__init__(*args, **kw)
-        
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
             touch.grab(self)
@@ -82,6 +78,11 @@ class DragRect(FloatLayout):
         if touch.grab_current is self:
             touch.ungrab(self)
 
+class Block(DragRect):
+    def __init__(self, *args, **kw):
+        self.avoid_shape = None
+        super().__init__(*args, **kw)
+        
     def on_pos(self, *args, **kw):
         self.update_avoid()
         
@@ -95,7 +96,7 @@ class DragRect(FloatLayout):
         else:
             router.moveShape(self.avoid_shape, rectangle)
         router.processTransaction()
-        
+
 class Connection(Widget):
     _kvpoints= ListProperty((0, 0, 1, 1))
     source = ListProperty((0, 0))

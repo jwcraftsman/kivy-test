@@ -2,24 +2,25 @@
 
 """
 Simple test of the libavoid library from the Adaptagrams project.
-This version uses spline routes for the connections.
+This version uses spline routes for the connections attached to blocks.
 """
 
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.widget import Widget
-from kivy.properties import ListProperty
+from kivy.properties import ListProperty, ObjectProperty
 from kivy.app import App
 from kivy.lang import Builder
 
 import adaptagrams as avoid
 
-buffer_distance = 5.0
+buffer_distance = 10.0
 
 class Router(avoid.Router):
     def __init__(self, *args, **kw):
         self.connections = []
         super().__init__(*args, **kw)
         self.setRoutingParameter(avoid.shapeBufferDistance, buffer_distance)
+        self.setRoutingParameter(avoid.crossingPenalty, 50000000)
         
     def processTransaction(self):
         super().processTransaction()
@@ -52,6 +53,7 @@ kv = """
 
 FloatLayout:
     Block:
+        id: block1
         pos: 100, 100
     Block:
         pos: 200, 100
@@ -60,10 +62,32 @@ FloatLayout:
     Block:
         pos: 400, 100
     Block:
+        id: block2
         pos: 500, 100
-    Connection:
-        source: 25, 125
-        dest: 625, 125
+    Block:
+        id: block3
+        pos: 100, 200
+    Block:
+        pos: 200, 200
+    Block:
+        pos: 300, 200
+    Block:
+        pos: 400, 200
+    Block:
+        id: block4
+        pos: 500, 200
+    Block:
+        id: block5
+        pos: 100, 300
+    Block:
+        pos: 200, 300
+    Block:
+        pos: 300, 300
+    Block:
+        pos: 400, 300
+    Block:
+        id: block6
+        pos: 500, 300
 """
 
 # Similar to DragBehavior
@@ -103,27 +127,35 @@ class Block(DragRect):
 
 class Connection(Widget):
     _kvpoints= ListProperty((0, 0, 1, 1))
-    source = ListProperty((0, 0))
-    dest = ListProperty((1, 1))
+    source = ObjectProperty(None)
+    dest = ObjectProperty(None)
     
     def __init__(self, *args, **kw):
-        self.avoid_conn = None
+        self.avoid_conn = avoid.ConnRef(router)
         super().__init__(*args, **kw)
         router.connections.append(self)
         
     def on_source(self, *args, **kw):
+        if self.source is not None:
+            pin = avoid.ShapeConnectionPin(
+                self.source.avoid_shape, 1, avoid.ATTACH_POS_RIGHT,
+                avoid.ATTACH_POS_CENTRE, True, -buffer_distance,
+                avoid.ConnDirRight)
+            src = avoid.ConnEnd(self.source.avoid_shape, 1)
+            self.avoid_conn.setSourceEndpoint(src)
         self.update_avoid()
         
     def on_dest(self, *args, **kw):
+        if self.dest is not None:
+            pin = avoid.ShapeConnectionPin(
+                self.dest.avoid_shape, 1, avoid.ATTACH_POS_LEFT,
+                avoid.ATTACH_POS_CENTRE, True, -buffer_distance,
+                avoid.ConnDirLeft)
+            dest = avoid.ConnEnd(self.dest.avoid_shape, 1)
+            self.avoid_conn.setDestEndpoint(dest)
         self.update_avoid()
         
     def update_avoid(self, *args, **kw):
-        src = avoid.ConnEnd(avoid.Point(self.source[0], self.source[1]))
-        dest = avoid.ConnEnd(avoid.Point(self.dest[0], self.dest[1]))
-        if self.avoid_conn is None:
-            self.avoid_conn = avoid.ConnRef(router, src, dest)
-        else:
-            self.avoid_conn.setEndpoints(src, dest)
         router.processTransaction()
         
     def update_points(self, *args, **kw):
@@ -137,8 +169,20 @@ class Connection(Widget):
                 points.append(point.y)
             self._kvpoints = points
 
+def connect(block1, block2):
+    c = Connection()
+    c.source = block1
+    c.dest   = block2
+    block1.update_avoid()
+    block2.update_avoid()
+    return c
+
 class TestApp(App):
     def build(self):
-        return Builder.load_string(kv)
-
+        root = Builder.load_string(kv)
+        root.add_widget(connect(root.ids.block1, root.ids.block2))
+        root.add_widget(connect(root.ids.block4, root.ids.block3))
+        root.add_widget(connect(root.ids.block5, root.ids.block6))
+        return root
+    
 TestApp().run()
